@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "bun --watch server.ts",
     "generate": "bunx prisma generate",
+    "migrate:prod": "bunx prisma migrate deploy",
+    "migrate:dev": "bunx prisma migrate dev",
     "start": "bun server.ts"
   },
   "devDependencies": {
