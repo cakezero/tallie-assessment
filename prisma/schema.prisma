@@ -1,0 +1,59 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+ 
+model Restaurant {
+  id           Int           @id @default(autoincrement())
+  name         String
+  openingTime  String
+  closingTime  String
+  noOfTables   Int
+  tables       Table[]
+  reservations Reservation[]
+}
+
+enum TableStatus {
+  available
+  reserved
+}
+
+model Table {
+  id           Int           @id @default(autoincrement())
+  tableNo      String
+  capacity     Int
+  status       TableStatus        @default(available)
+  restaurantId Int
+  restaurant   Restaurant?   @relation(fields: [restaurantId], references: [id])
+  reservations Reservation[]
+}
+
+enum ReservationStatus {
+  cancelled
+  completed
+  confirmed
+  pending
+}
+
+model Reservation {
+  id                Int         @id @default(autoincrement())
+  customerName      String
+  phoneNumber       String
+  tableNo           String
+  date              DateTime
+  status            ReservationStatus @default(confirmed)
+  reservationStarts DateTime
+  reservationEnds   DateTime
+  email             String
+  duration          Int
+  size              Int
+  tableId           Int
+  restaurantId      Int
+  restaurant        Restaurant? @relation(fields: [restaurantId], references: [id])
+  table             Table?      @relation(fields: [tableId], references: [id])
+}
