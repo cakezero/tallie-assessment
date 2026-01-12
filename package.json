@@ -8,7 +8,8 @@
     "generate": "bunx prisma generate",
     "migrate:prod": "bunx prisma migrate deploy",
     "migrate:dev": "bunx prisma migrate dev",
-    "start": "bun server.ts"
+    "start": "bun server.ts",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -21,6 +22,7 @@
     "@types/nodemailer": "^7.0.4",
     "@types/nodemailer-express-handlebars": "^4.0.6",
     "@types/pg": "^8.16.0",
+    "@types/supertest": "^6.0.3",
     "jest": "^30.2.0",
     "prisma": "^7.2.0",
     "supertest": "^7.2.2",
