@@ -8,10 +8,9 @@ export const validateReservationRequestData = (reqData: any) => {
 		tableNo: z.string().trim(),
 		customerName: z.string().trim(),
 		size: z.number(),
-		email: z.number(),
+		email: z.email(),
 		phoneNumber: z.string().trim(),
-		restaurantId: z.string().trim(),
-		tableId: z.string().trim(),
+		restaurantId: z.number(),
 	});
 
 	const parseData = reserveSchema.safeParse(reqData);
@@ -61,7 +60,7 @@ export const validateTableRequestData = (reqData: any) => {
 	const tableSchema = z.object({
 		tableNo: z.string().trim(),
 		capacity: z.number(),
-		restaurantId: z.string().trim(),
+		restaurantId: z.number(),
 	});
 
 	const parseData = tableSchema.safeParse(reqData);

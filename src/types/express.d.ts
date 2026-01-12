@@ -10,7 +10,7 @@ declare global {
     email: string;
     customerName;
     size: number;
-    restaurant_id: number;
+    restaurantId: number;
     tableNo: string;
     date: string;
     time: string;
