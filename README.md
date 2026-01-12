@@ -484,9 +484,9 @@ POST /api/v1/reservation/waitlist
   "tableNo": "string",
   "customerName": "string",
   "phoneNumber": "string",
-  "date": "string",
+  "date": "string", // 2026-01-10
   "email": "string",
-  "time": "string",
+  "time": "string", // 10:00, 12:00, 14:00 etc
   "size": number,
   "duration": number,
   "restaurantId": number,
@@ -542,9 +542,9 @@ POST /api/v1/reservation/create
   "tableNo": "string",
   "customerName": "string",
   "phoneNumber": "string",
-  "date": "string",
+  "date": "string", // 2026-01-10
   "email": "string",
-  "time": "string",
+  "time": "string", // 10:00, 12:00, 14:00 etc
   "size": number,
   "duration": number,
   "restaurantId": number,
@@ -593,9 +593,9 @@ PUT /api/v1/reservation/2
   "tableNo": "string",
   "customerName": "string",
   "phoneNumber": "string",
-  "date": "string",
+  "date": "string", // 2026-01-10
   "email": "string",
-  "time": "string",
+  "time": "string", // 10:00, 12:00, 14:00 etc
   "size": number,
   "duration": number,
   "restaurantId": number,
