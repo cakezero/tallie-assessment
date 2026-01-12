@@ -14,21 +14,21 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
       return;
     }
 
-    const { date, time, duration, tableNo, email, customerName, size, restaurant_id }: reservationRequestBody = req.body;
+    const { date, time, duration, tableNo, email, customerName, size, restaurantId }: reservationRequestBody = req.body;
 
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurant_id }
+      where: { id: restaurantId }
     });
 
     if (!restaurant) {
-      res.status(NOT_FOUND).json({ error: "restaurant not found or restaurant_id is invalid" });
+      res.status(NOT_FOUND).json({ error: "restaurant not found or restaurantId is invalid" });
       return;
     }
 
     const reservationStarts = new Date(`${date}T${time}`);
     const reservationEnds = new Date(reservationStarts.getTime() + duration * 60 * 60 * 1000); // this is the total duration the user is going to stay for. i.e 7pm + 2hrs = 9pm.
 
-    const now = (reservationStarts).toLocaleTimeString().split(":")[0];
+    const now = time.split(":")[0];
 
     const restaurantOpen = Number(now) < Number(restaurant.closingTime.split(" ")[0]);
     if (!restaurantOpen) {
@@ -48,7 +48,7 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
     }
 
     const tableExists = await prisma.table.findFirst({
-      where: { tableNo, restaurantId: restaurant_id }
+      where: { tableNo, restaurantId }
     });
 
     if (!tableExists) {
@@ -76,8 +76,10 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
     newReservation.reservationEnds = reservationEnds;
     newReservation.date = reservationStarts;
 
+    delete req.body.restaurantId;
+
     const reservationExists = await prisma.reservation.findFirst({
-      where: { tableNo, restaurantId: restaurant_id }
+      where: { tableNo, restaurantId }
     });
 
     if (!reservationExists) {
@@ -135,8 +137,8 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
 
 export const cancelReservation = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
-    const { customerName, restaurant_id } = req.query as unknown as { restaurant_id: number; tableNo: string; customerName: string };
-    if (!customerName || !restaurant_id) {
+    const { customerName, restaurantId } = req.query as unknown as { restaurantId: number; tableNo: string; customerName: string };
+    if (!customerName || !restaurantId) {
       res.status(BAD_REQUEST).json({ error: "send reserved customer name and restaurant id" });
       return;
     }
@@ -144,7 +146,7 @@ export const cancelReservation = async (req: GlobalRequest, res: GlobalResponse)
     const reservation = await prisma.reservation.findFirst({
       where: {
         customerName,
-        restaurantId: restaurant_id,
+        restaurantId,
         status: "confirmed"
       }
     });
@@ -171,14 +173,14 @@ export const cancelReservation = async (req: GlobalRequest, res: GlobalResponse)
 export const editReservation = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
 
-    const { reservation_id }: { reservation_id: number } = req.body;
-    if (!reservation_id) {
+    const { reservationId }: { reservationId: number } = req.body;
+    if (!reservationId) {
       res.status(BAD_REQUEST).json({ error: "send reservation id" });
       return;
     }
 
     const reservation = await prisma.reservation.findUnique({
-      where: { id: reservation_id, status: "confirmed" }
+      where: { id: reservationId, status: "confirmed" }
     });
 
     if (!reservation) {
@@ -187,7 +189,7 @@ export const editReservation = async (req: GlobalRequest, res: GlobalResponse) =
     }
 
     await prisma.reservation.update({
-      where: { id: reservation_id },
+      where: { id: reservationId },
       data: { ...req.body }
     });
 
@@ -200,17 +202,15 @@ export const editReservation = async (req: GlobalRequest, res: GlobalResponse) =
 
 export const getReservations = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
-    const { date, restaurant_id } = req.query as { date: string; restaurant_id: string };
+    const { date, restaurantId } = req.query as { date: string; restaurantId: string };
 
-    if (!date || !restaurant_id) {
-      res.status(BAD_REQUEST).json({ error: "send date" });
+    if (!date || !restaurantId) {
+      res.status(BAD_REQUEST).json({ error: "send date and restaurant id" });
       return;
     }
 
-    const reservationDate = new Date(date);
-
     const reservations = await prisma.reservation.findMany({
-      where: { date: reservationDate, restaurantId: Number(restaurant_id) }
+      where: { date, restaurantId: Number(restaurantId) }
     });
 
     if (reservations.length === 0) {
@@ -220,21 +220,22 @@ export const getReservations = async (req: GlobalRequest, res: GlobalResponse) =
 
     res.status(OK).json({ message: "reservations fetched", reservations });
   } catch (error) {
+    logger.error(error);
     res.status(INTERNAL_SERVER_ERROR).json({ error: "error fetching reservations for specific date" });
   }
 }
 
 export const getAvailableTimeSlots = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
-    const { size, date, restaurant_id }: { size: number; date: string; restaurant_id: number } = req.body;
+    const { size, date, restaurantId }: { size: number; date: string; restaurantId: number } = req.body;
 
-    if (!size || !date || !restaurant_id) {
+    if (!size || !date || !restaurantId) {
       res.status(BAD_REQUEST).json({ error: "send the required values" });
       return;
     }
 
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurant_id }
+      where: { id: restaurantId }
     });
 
     if (!restaurant) {
@@ -244,7 +245,7 @@ export const getAvailableTimeSlots = async (req: GlobalRequest, res: GlobalRespo
 
     const availableTables = await prisma.table.findMany({
       where: {
-        restaurantId: restaurant_id,
+        restaurantId,
         status: "available",
         capacity: { lte: size }
       }
@@ -277,14 +278,14 @@ export const addWaitlist = async (req: GlobalRequest, res: GlobalResponse) => {
       return;
     }
 
-    const { date, time, duration, restaurant_id }: reservationRequestBody = req.body;
+    const { date, time, duration, restaurantId }: reservationRequestBody = req.body;
 
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurant_id }
+      where: { id: restaurantId }
     });
 
     if (!restaurant) {
-      res.status(NOT_FOUND).json({ error: "restaurant not found or restaurant_id is invalid" });
+      res.status(NOT_FOUND).json({ error: "restaurant not found or restaurantId is invalid" });
       return;
     }
 
@@ -300,7 +301,7 @@ export const addWaitlist = async (req: GlobalRequest, res: GlobalResponse) => {
     }
 
     const availableTables = await prisma.table.findMany({
-      where: { restaurantId: restaurant_id, status: "available" }
+      where: { restaurantId, status: "available" }
     });
 
     if (availableTables.length !== 0) {
@@ -313,6 +314,7 @@ export const addWaitlist = async (req: GlobalRequest, res: GlobalResponse) => {
         ...req.body,
         reservationEnds,
         reservationStarts,
+        restaurant: { connect: { id: restaurantId } },
         status: "pending"
       }
     });

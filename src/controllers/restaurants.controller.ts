@@ -1,6 +1,5 @@
 import { prisma } from "@/configs/db";
 import logger from "@/configs/logger";
-import { restaurant } from "@/models/restaurant.models";
 import { INTERNAL_SERVER_ERROR, OK, CREATED, NOT_FOUND, BAD_REQUEST } from "@/utils/status.utils";
 import { validateRestaurantRequestData } from "@/utils/utils";
 

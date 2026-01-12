@@ -5,14 +5,14 @@ import { validateTableRequestData } from "@/utils/utils";
 
 export const getTables = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
-    const { restaurant_id } = req.query as { restaurant_id: string };
-    if (!restaurant_id) {
+    const { restaurantId } = req.query as { restaurantId: string };
+    if (!restaurantId) {
       res.status(BAD_REQUEST).json({ error: "send restaurant id" });
       return;
     }
 
     const tables = await prisma.table.findMany({
-      where: { restaurantId: Number(restaurant_id) }
+      where: { restaurantId: Number(restaurantId) }
     });
 
     if (tables.length === 0) {
@@ -29,16 +29,16 @@ export const getTables = async (req: GlobalRequest, res: GlobalResponse) => {
 
 export const getTable = async (req: GlobalRequest, res: GlobalResponse) => {
   try {
-    const { restaurant_id } = req.query as { restaurant_id: string };
+    const { restaurantId } = req.query as { restaurantId: string };
     const id = req.params.id as string;
 
-    if (!id || !restaurant_id) {
+    if (!id || !restaurantId) {
       res.status(BAD_REQUEST).json({ error: "send table id and restaurant id" });
       return;
     }
 
     const foundTable = await prisma.table.findUnique({
-      where: { id: Number(id), restaurantId: Number(restaurant_id) }
+      where: { id: Number(id), restaurantId: Number(restaurantId) }
     });
  
     if (!foundTable) {
@@ -61,10 +61,14 @@ export const createTable = async (req: GlobalRequest, res: GlobalResponse) => {
       return;
     }
 
+    const restaurantId = req.body.restaurantId;
+
+    delete req.body.restaurantId;
+
     await prisma.table.create({
       data: {
         ...req.body,
-        restaurant: { connect: { id: req.body.restaurant_id } }
+        restaurant: { connect: { id: restaurantId } }
       }
     });
 
