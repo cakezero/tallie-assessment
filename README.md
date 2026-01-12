@@ -232,8 +232,8 @@ GET /api/v1/restaurant/time-slot
 ```json
 {
   "size": number,
-  "date": "string",
-  "restaurant_id": number,
+  "date": "string", // 2026-01-30
+  "restaurantId": number,
 }
 ```
 
@@ -279,7 +279,7 @@ Fetch all tables.
 ### Request
 
 ```
-GET /api/v1/tables?restaurant_id=9
+GET /api/v1/tables?restaurantId=9
 ```
 
 ### 200 OK
@@ -330,7 +330,7 @@ Fetch a table.
 ### Request
 
 ```
-GET /api/v1/table/1?restaurant_id=6
+GET /api/v1/table/1?restaurantId=6
 ```
 
 ### 200 OK
@@ -383,7 +383,7 @@ Create a new table.
 {
   "tableNo": "string",
   "capacity": number,
-  "restaurant_id": number,
+  "restaurantId": number,
 }
 ```
 
@@ -418,7 +418,7 @@ Fetch all reservations.
 ### Request
 
 ```
-GET /api/v1/reservations?restaurant_id=9&date=2026-01-11
+GET /api/v1/reservations?restaurantId=9&date=2026-01-11
 ```
 
 ### 200 OK
@@ -430,8 +430,9 @@ GET /api/v1/reservations?restaurant_id=9&date=2026-01-11
     "tableNo": "string",
     "customerName": "string",
     "phoneNumber": "string",
-    "date": "string",
+    "date": "string", // 2026-01-10
     "email": "string",
+    "time": "string", // 10:40, 12:00, 13:00 etc
     "reservationStarts": "string",
     "reservationEnds": "string",
     "size": number,
@@ -548,7 +549,6 @@ POST /api/v1/reservation/create
   "size": number,
   "duration": number,
   "restaurantId": number,
-  "tableId": number,
 }
 ```
 
