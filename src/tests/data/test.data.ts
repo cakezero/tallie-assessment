@@ -1,5 +1,5 @@
 export const createReservation = {
-  time: "15:00:00",
+  time: "03:00:00",
   date: "2026-02-12",
   duration: 3,
   customerName: "Bright",
