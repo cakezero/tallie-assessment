@@ -69,14 +69,14 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
       res.status(OK).json({ message: "capacity is too much for the table requested, check the recommended tables for your party size", tables });
       return
     }
+    
+    delete req.body.time;
+    delete req.body.restaurantId;
 
     const newReservation: ReservationCreateInput = { ...req.body };
 
     newReservation.reservationStarts = reservationStarts;
     newReservation.reservationEnds = reservationEnds;
-    newReservation.date = reservationStarts;
-
-    delete req.body.restaurantId;
 
     const reservationExists = await prisma.reservation.findFirst({
       where: { tableNo, restaurantId }
