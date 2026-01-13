@@ -125,7 +125,7 @@ export const makeReservation = async (req: GlobalRequest, res: GlobalResponse) =
     if (SERVER_ENV.ENVIRONMENT === "production") {
       await sendReservationEmail({ email, tableNo, restaurantName: restaurant.name, customerName });
     } else {
-      logger.info({ title: "✅ Email sent", text: `Table ${tableNo} reserved, horray!` });
+      logger.info(`✅ Email sent, Table ${tableNo} reserved, horray!`);
     }
 
     res.status(CREATED).json({ message: "table reserved" });
